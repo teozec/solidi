@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+  I Solidi: an interactive website that teaches solids to primary school children.
+  Copyright (C) 2026  Matteo Zeccoli Marazzini
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smontiamo i solidi – I Solidi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/presentation/style.css" />
+    <script type="module" src="/src/entries/nets.ts"></script>
+  </head>
+  <body class="section">
+    <header class="topbar">
+      <a class="back" href="./index.html">⌂ Home</a>
+      <h1><img class="logo" src="/favicon.svg" alt="" />Smontiamo i solidi</h1>
+    </header>
+    <nav class="picker" id="picker" aria-label="Scegli il solido"></nav>
+    <main class="stage">
+      <div class="viewport" id="viewport">
+        <div class="corner">
+          <button class="corner-btn" id="resetView">🎯 Vista 3D</button>
+          <button class="corner-btn" id="topView">⬇ Dall’alto</button>
+        </div>
+        <p class="hint">Trascina per girare la vista · rotellina o due dita per lo zoom</p>
+      </div>
+      <aside class="panel">
+        <h2 id="solidName"></h2>
+        <p id="solidText"></p>
+        <div class="message" id="message"></div>
+        <dl class="info" id="info"></dl>
+        <label class="toggle"><input type="checkbox" id="stepToggle" checked /> Una faccia alla volta</label>
+      </aside>
+    </main>
+    <footer class="timeline" id="timeline"></footer>
+  </body>
+</html>

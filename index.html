@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  I Solidi: an interactive website that teaches solids to primary school children.
+  Copyright (C) 2026  Matteo Zeccoli Marazzini
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>I Solidi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/presentation/style.css" />
+  </head>
+  <body class="home">
+    <header class="hero">
+      <h1><img class="logo" src="/favicon.svg" alt="" />Alla scoperta dei <span>solidi</span></h1>
+      <p>Guarda come nascono i solidi e come si smontano. Puoi andare avanti e indietro quanto vuoi!</p>
+    </header>
+    <main class="cards">
+      <a class="card" href="./rotazione.html" style="--c: #4d96ff">
+        <div class="card-art">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <line x1="40" y1="8" x2="40" y2="112" stroke="#e63946" stroke-width="4" stroke-dasharray="8 6" />
+            <rect x="40" y="30" width="36" height="60" fill="#ffb703" stroke="#1d2440" stroke-width="3" />
+            <path d="M84 60 A44 14 0 1 1 8 66" fill="none" stroke="#ff8c00" stroke-width="4" />
+            <path d="M8 66 l-2 -10 m2 10 l10 -2" stroke="#ff8c00" stroke-width="4" stroke-linecap="round" />
+          </svg>
+        </div>
+        <h2>Solidi di rotazione</h2>
+        <p>Una figura piana gira attorno a un asse… e nasce un solido!</p>
+        <span class="go">Entra ▶</span>
+      </a>
+      <a class="card" href="./sviluppi.html" style="--c: #ff6b6b">
+        <div class="card-art">
+          <svg viewBox="0 0 120 120" width="120" height="120" stroke="#1d2440" stroke-width="3">
+            <rect x="44" y="8" width="26" height="26" fill="#ffd93d" />
+            <rect x="18" y="34" width="26" height="26" fill="#6bcb77" />
+            <rect x="44" y="34" width="26" height="26" fill="#ff6b6b" />
+            <rect x="70" y="34" width="26" height="26" fill="#4d96ff" />
+            <rect x="44" y="60" width="26" height="26" fill="#c77dff" />
+            <rect x="44" y="86" width="26" height="26" fill="#ff9f43" />
+          </svg>
+        </div>
+        <h2>Smontiamo i solidi</h2>
+        <p>Apriamo i solidi faccia per faccia fino a renderli piatti: ecco lo sviluppo!</p>
+        <span class="go">Entra ▶</span>
+      </a>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": ["src/**", "*.ts", "*.json", "!package-lock.json"]
+  },
+  "formatter": {
+    "enabled": false
+  },
+  "assist": {
+    "enabled": false
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/domain/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["three"],
+                    "importNamePattern": "(Vector3|Matrix4)",
+                    "invertImportNamePattern": true,
+                    "message": "The domain may only use the math classes of three (Vector3, Matrix4)."
+                  },
+                  {
+                    "group": ["three/**"],
+                    "message": "The domain may only use the math classes of three (Vector3, Matrix4)."
+                  },
+                  {
+                    "group": ["**/application/**", "**/presentation/**", "**/entries/**"],
+                    "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
+                  }
+                ]
+              }
+            },
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": { "deniedGlobals": { "document": "No DOM in the domain.", "window": "No DOM in the domain." } }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/application/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  { "group": ["three", "three/**"], "message": "Rendering belongs to the presentation layer." },
+                  {
+                    "group": ["**/presentation/**", "**/entries/**"],
+                    "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
+                  }
+                ]
+              }
+            },
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": { "document": "No DOM in the application layer.", "window": "No DOM in the application layer." }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/presentation/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/entries/**"],
+                    "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
