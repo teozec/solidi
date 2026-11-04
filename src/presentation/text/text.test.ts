@@ -19,6 +19,7 @@
 import { describe, expect, it } from 'vitest';
 import { agree, definite, feminine, indefinite, masculine, pronoun, yours } from './italian';
 import { bornResult, characteristicsRows, figureFeedback, turnMessage, unfoldMessage } from './messages';
+import { saveFeedback, savedSolidTexts } from './savedSolids';
 import { netTexts } from './solids';
 
 describe('Italian grammar helpers', () => {
@@ -75,5 +76,23 @@ describe('messages', () => {
       ['Spigoli', '1, curvo'],
       ['Vertici', '1 (la punta)'],
     ]);
+  });
+});
+
+describe('saved solid texts', () => {
+  it('escapes the name chosen by the child', () => {
+    const name = '<img src=x onerror=alert(1)> & co';
+    expect(savedSolidTexts.description(name)).toContain('«&lt;img src=x onerror=alert(1)&gt; &amp; co»');
+    expect(savedSolidTexts.description(name)).not.toContain('<img');
+    const saved = saveFeedback({ ok: true, value: name });
+    expect(saved?.html).not.toContain('<img');
+    expect(saved?.done).toBe(true);
+  });
+
+  it('explains why a solid was not saved', () => {
+    expect(saveFeedback({ ok: false, error: { kind: 'nameTooLong', max: 24 } })?.html).toContain('24 lettere');
+    expect(saveFeedback({ ok: false, error: { kind: 'full', max: 50 } })?.html).toContain('50 solidi');
+    expect(saveFeedback({ ok: false, error: { kind: 'emptyName' } })?.done).toBe(false);
+    expect(saveFeedback('replaceDeclined')?.html).toContain('altro nome');
   });
 });

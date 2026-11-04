@@ -36,7 +36,7 @@
                     "message": "The domain may only use the math classes of three (Vector3, Matrix4)."
                   },
                   {
-                    "group": ["**/application/**", "**/presentation/**", "**/entries/**"],
+                    "group": ["**/application/**", "**/presentation/**", "**/infrastructure/**", "**/entries/**"],
                     "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
                   }
                 ]
@@ -44,7 +44,13 @@
             },
             "noRestrictedGlobals": {
               "level": "error",
-              "options": { "deniedGlobals": { "document": "No DOM in the domain.", "window": "No DOM in the domain." } }
+              "options": {
+                "deniedGlobals": {
+                  "document": "No DOM in the domain.",
+                  "window": "No DOM in the domain.",
+                  "localStorage": "Storage belongs to the infrastructure layer."
+                }
+              }
             }
           }
         }
@@ -61,7 +67,7 @@
                 "patterns": [
                   { "group": ["three", "three/**"], "message": "Rendering belongs to the presentation layer." },
                   {
-                    "group": ["**/presentation/**", "**/entries/**"],
+                    "group": ["**/presentation/**", "**/infrastructure/**", "**/entries/**"],
                     "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
                   }
                 ]
@@ -70,7 +76,11 @@
             "noRestrictedGlobals": {
               "level": "error",
               "options": {
-                "deniedGlobals": { "document": "No DOM in the application layer.", "window": "No DOM in the application layer." }
+                "deniedGlobals": {
+                  "document": "No DOM in the application layer.",
+                  "window": "No DOM in the application layer.",
+                  "localStorage": "Storage belongs to the infrastructure layer."
+                }
               }
             }
           }
@@ -87,10 +97,40 @@
               "options": {
                 "patterns": [
                   {
+                    "group": ["**/infrastructure/**"],
+                    "message": "Presentation does not talk to storage: the entries wire it through the application layer."
+                  },
+                  {
                     "group": ["**/entries/**"],
                     "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
                   }
                 ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/infrastructure/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/presentation/**", "**/entries/**"],
+                    "message": "Inner layers must not depend on outer layers (see Project structure in README.md)."
+                  }
+                ]
+              }
+            },
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": { "document": "No DOM in the infrastructure layer.", "window": "No DOM in the infrastructure layer." }
               }
             }
           }

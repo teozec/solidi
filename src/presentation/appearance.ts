@@ -19,6 +19,7 @@
 // Colors and icons. Icons are white strokes on a colored circle.
 import type { NetSolidId } from '../domain/nets/catalog';
 import type { RevolutionSolidId } from '../domain/revolution/catalog';
+import type { PlaneFigure } from '../domain/revolution/planeFigure';
 
 export interface PickerLook {
   readonly color: string;
@@ -45,6 +46,30 @@ export const customRevolutionLook: RevolutionLook = {
   figureColor: '#ffd93d',
   icon: icon('<path d="M9 31 L11 24 L26 9 L31 14 L16 29 Z M23 12 L28 17"/>'),
 };
+
+const SAVED_COLORS = ['#2ec4b6', '#ff6b6b', '#4d96ff', '#6bcb77', '#c77dff', '#ff9f43'];
+
+/**
+ * Look of a solid saved by the child: its own figure as the icon, and a color chosen from the name,
+ * so it stays the same when other solids are added or deleted.
+ */
+export function savedSolidLook(name: string, figure: PlaneFigure): RevolutionLook {
+  let hash = 0;
+  for (const c of name.toLocaleLowerCase('it')) hash = (hash * 31 + (c.codePointAt(0) ?? 0)) >>> 0;
+  return { color: SAVED_COLORS[hash % SAVED_COLORS.length], figureColor: '#ffd93d', icon: figureIcon(figure) };
+}
+
+/** The figure drawn inside the 40×40 icon box, with the axis on the left like the catalog icons. */
+function figureIcon(figure: PlaneFigure): string {
+  const xs = figure.vertices.map(([x]) => x);
+  const ys = figure.vertices.map(([, y]) => y);
+  const [minY, maxY, maxX] = [Math.min(...ys), Math.max(...ys), Math.max(...xs)];
+  const scale = Math.min(22 / maxX, 26 / (maxY - minY));
+  const left = 20 - (maxX * scale) / 2;
+  const bottom = 20 + ((maxY - minY) * scale) / 2;
+  const points = figure.vertices.map(([x, y]) => `${(left + x * scale).toFixed(1)},${(bottom - (y - minY) * scale).toFixed(1)}`);
+  return icon(`<polygon points="${points.join(' ')}"/>`, 2.6);
+}
 
 export const netLooks: Record<NetSolidId, PickerLook> = {
   cube: { color: '#ff6b6b', icon: icon('<path d="M8 14 L20 8 L32 14 L32 28 L20 34 L8 28 Z M8 14 L20 20 L32 14 M20 20 L20 34"/>', 2.6) },

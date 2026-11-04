@@ -49,12 +49,16 @@ export interface FigureEditorView {
   badSides: ReadonlySet<number>;
   feedback: Message;
   canSpin: boolean;
+  /** Name typed for the figure. */
+  name: string;
 }
 
 export interface FigureEditorOptions {
   /** The drawing changed (points in 3D units). */
   onChange: (points: Point2[]) => void;
   onSpin: () => void;
+  onRename: (name: string) => void;
+  onSave: () => void;
 }
 
 const staticSheet = (() => {
@@ -72,11 +76,15 @@ const staticSheet = (() => {
   return `<g>${s}</g>`;
 })();
 
-export function createFigureEditor(el: HTMLElement, { onChange, onSpin }: FigureEditorOptions) {
+export function createFigureEditor(el: HTMLElement, { onChange, onSpin, onRename, onSave }: FigureEditorOptions) {
   el.innerHTML = `
     <p class="editor-head">${editorLabels.instructions}</p>
     <svg class="editor-svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" preserveAspectRatio="xMidYMid meet"></svg>
     <p class="editor-msg"></p>
+    <form class="editor-name">
+      <input type="text" maxlength="40" autocomplete="off" aria-label="${editorLabels.name}" placeholder="${editorLabels.namePlaceholder}" />
+      <button class="ed-btn" type="submit">${editorLabels.save}</button>
+    </form>
     <div class="editor-actions">
       <button class="ed-btn" data-act="undo">${editorLabels.undo}</button>
       <button class="ed-btn" data-act="clear">${editorLabels.clear}</button>
@@ -84,11 +92,14 @@ export function createFigureEditor(el: HTMLElement, { onChange, onSpin }: Figure
     </div>`;
   const svg = query<SVGSVGElement>(el, 'svg');
   const messageEl = query<HTMLElement>(el, '.editor-msg');
+  const nameForm = query<HTMLFormElement>(el, '.editor-name');
+  const nameInput = query<HTMLInputElement>(nameForm, 'input');
+  const saveButton = query<HTMLButtonElement>(nameForm, 'button');
   const buttons = Object.fromEntries(
     [...el.querySelectorAll<HTMLButtonElement>('[data-act]')].map((b) => [b.dataset.act, b]),
   ) as Record<'undo' | 'clear' | 'spin', HTMLButtonElement>;
 
-  let current: FigureEditorView = { points: [], badSides: new Set(), feedback: { html: '', done: false }, canSpin: false };
+  let current: FigureEditorView = { points: [], badSides: new Set(), feedback: { html: '', done: false }, canSpin: false, name: '' };
   /** Index of the vertex being dragged, -1 if none. */
   let dragging = -1;
 
@@ -119,6 +130,9 @@ export function createFigureEditor(el: HTMLElement, { onChange, onSpin }: Figure
     messageEl.innerHTML = current.feedback.html;
     messageEl.classList.toggle('ok', current.feedback.done);
     buttons.spin.disabled = !ok;
+    saveButton.disabled = !ok;
+    // Only when it differs, so typing does not move the caret.
+    if (nameInput.value !== current.name) nameInput.value = current.name;
     buttons.undo.disabled = n === 0;
     buttons.clear.disabled = n === 0;
   }
@@ -167,6 +181,11 @@ export function createFigureEditor(el: HTMLElement, { onChange, onSpin }: Figure
   buttons.undo.onclick = () => change(grid().slice(0, -1));
   buttons.clear.onclick = () => change([]);
   buttons.spin.onclick = () => onSpin();
+  nameInput.addEventListener('input', () => onRename(nameInput.value));
+  nameForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    onSave();
+  });
 
   return {
     render(view: FigureEditorView) {

@@ -33,4 +33,7 @@ export const editorLabels = {
   undo: '↩ Togli l’ultimo',
   clear: '🗑 Ricomincia',
   spin: '🔄 Fai girare!',
+  name: 'Nome del solido',
+  namePlaceholder: 'es. Razzo',
+  save: '💾 Salva',
 } as const;

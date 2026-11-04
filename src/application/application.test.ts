@@ -20,6 +20,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { NetsPage } from './netsPage';
 import { Playback } from './playback';
 import { RevolutionPage } from './revolutionPage';
+import { memoryStorage, type SolidStorage } from './solidStorage';
 
 describe('Playback', () => {
   it('plays forward to the end, stops and reports it', () => {
@@ -64,7 +65,7 @@ describe('Playback', () => {
 
 describe('RevolutionPage', () => {
   it('does not spin an invalid drawing', () => {
-    const page = new RevolutionPage();
+    const page = new RevolutionPage(memoryStorage());
     const before = page.state.figure;
     page.startDrawing();
     page.updateDraft([[0, 0], [1, 1]]);
@@ -74,7 +75,7 @@ describe('RevolutionPage', () => {
   });
 
   it('spins a valid drawing from the start of the turn', () => {
-    const page = new RevolutionPage();
+    const page = new RevolutionPage(memoryStorage());
     page.playback.seek(0.7);
     page.startDrawing();
     page.updateDraft([[0, 0], [1, 0], [1, 2], [0, 2]]);
@@ -85,12 +86,98 @@ describe('RevolutionPage', () => {
   });
 
   it('keeps the drawing when drawing again', () => {
-    const page = new RevolutionPage();
+    const page = new RevolutionPage(memoryStorage());
     page.startDrawing();
     page.updateDraft([[0, 0], [1, 0], [0, 1]]);
     page.selectSolid('cone');
     page.startDrawing();
     expect(page.state.draft.points).toHaveLength(3);
+  });
+});
+
+const RECTANGLE: [number, number][] = [[0, 0], [1, 0], [1, 2], [0, 2]];
+const TRIANGLE: [number, number][] = [[0, 0], [1, 0], [0, 2]];
+
+/** A page with the drawing sheet open, `points` drawn and `name` typed. */
+function pageDrawing(points: [number, number][], name = '', storage: SolidStorage = memoryStorage()) {
+  const page = new RevolutionPage(storage);
+  page.startDrawing();
+  page.updateDraft(points);
+  page.renameDraft(name);
+  return page;
+}
+
+describe('RevolutionPage: saved solids', () => {
+  it('saves the drawing before spinning it, newest first', () => {
+    const storage = memoryStorage([{ name: 'Razzo', points: TRIANGLE }]);
+    const page = pageDrawing(RECTANGLE, '  Il mio   tubo ', storage);
+    expect(page.saveDraft()).toEqual({ ok: true, value: 'Il mio tubo' });
+    expect(page.state.drawing).toBe(true);
+    expect(page.state.draft.name).toBe('Il mio tubo');
+    expect(storage.load()).toEqual([
+      { name: 'Il mio tubo', points: RECTANGLE },
+      { name: 'Razzo', points: TRIANGLE },
+    ]);
+  });
+
+  it('restores the saved solids on the next visit, skipping broken data', () => {
+    const storage = memoryStorage([
+      { name: 'Razzo', points: TRIANGLE },
+      { name: 'Rotto', points: [[0, 0], [1, 1]] },
+      { name: '   ', points: RECTANGLE },
+    ]);
+    const page = new RevolutionPage(storage);
+    expect(page.state.collection.solids.map((s) => s.name)).toEqual(['Razzo']);
+  });
+
+  it('loads a saved solid on the sheet, to change it before spinning it again', () => {
+    const page = new RevolutionPage(memoryStorage([{ name: 'Razzo', points: TRIANGLE }]));
+    page.playback.seek(0.5);
+    page.loadSaved('razzo');
+    expect(page.state.drawing).toBe(true);
+    expect(page.state.draft).toMatchObject({ points: TRIANGLE, name: 'Razzo' });
+    expect(page.state.draft.check.ok).toBe(true);
+    page.updateDraft([[0, 0], [2, 0], [0, 2]]);
+    page.spinDraft();
+    expect(page.state.figureName).toBe('Razzo');
+    expect(page.state.figure.vertices).toEqual([[0, 0], [2, 0], [0, 2]]);
+    expect(page.playback.state.t).toBe(0);
+  });
+
+  it('spins without a name, or with an invalid one, as an unnamed solid', () => {
+    const page = pageDrawing(RECTANGLE, '   ');
+    page.spinDraft();
+    expect(page.state.figureName).toBeNull();
+  });
+
+  it('asks before replacing a solid with the same name', () => {
+    const storage = memoryStorage([{ name: 'Razzo', points: TRIANGLE }]);
+    const page = pageDrawing(RECTANGLE, 'RAZZO', storage);
+    expect(page.saveDraft()).toEqual({ ok: false, error: { kind: 'nameTaken', name: 'Razzo' } });
+    expect(storage.load()[0].points).toEqual(TRIANGLE);
+    expect(page.saveDraft({ replace: true }).ok).toBe(true);
+    expect(storage.load()).toEqual([{ name: 'RAZZO', points: RECTANGLE }]);
+  });
+
+  it('rejects bad names and drawings that are not valid figures', () => {
+    expect(pageDrawing(RECTANGLE, ' ').saveDraft()).toEqual({ ok: false, error: { kind: 'emptyName' } });
+    expect(pageDrawing([[0, 0], [1, 1]], 'Linea').saveDraft()).toEqual({ ok: false, error: { kind: 'nothingToSave' } });
+  });
+
+  it('reports a storage failure without pretending the solid was saved', () => {
+    const broken: SolidStorage = { load: () => [], save: () => false };
+    const page = pageDrawing(RECTANGLE, 'Tubo', broken);
+    expect(page.saveDraft()).toEqual({ ok: false, error: { kind: 'storageFailed' } });
+    expect(page.state.collection.size).toBe(0);
+  });
+
+  it('deletes a saved solid, leaving the drawing on the sheet', () => {
+    const storage = memoryStorage();
+    const page = pageDrawing(RECTANGLE, 'Tubo', storage);
+    page.saveDraft();
+    page.deleteSaved('tubo');
+    expect(storage.load()).toEqual([]);
+    expect(page.state.draft.points).toEqual(RECTANGLE);
   });
 });
 

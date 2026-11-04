@@ -4,7 +4,8 @@ An interactive website that teaches 3D solids to primary school children (third 
 
 - **Solidi di rotazione** (solids of revolution): a plane figure turns around an axis and a solid is
   born. The animation can be played forwards and backwards, or scrubbed with a slider.
-  With **Disegna tu** children draw their own figure and watch the solid it generates.
+  With **Disegna tu** children draw their own figure and watch the solid it generates; they can give
+  it a name and save it (in the browser's local storage, so only on that browser and computer).
 - **Smontiamo i solidi** (unfolding solids): cube, cuboid, triangular prism, square pyramid, cylinder
   and cone open up face by face until they lie flat as a net, one face at a time or all together.
 
@@ -41,6 +42,7 @@ src/
     nets/            polyhedra and their nets
   application/     page state and use cases (playback, solid selection, drawing); no DOM
   presentation/    Italian texts and grammar, Three.js views, DOM widgets, colors, styles
+  infrastructure/  browser storage, behind interfaces defined by the application layer
   entries/         entry point of each page: wires the layers together
 ```
 

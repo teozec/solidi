@@ -482,6 +482,84 @@ h2 {
   }
 }
 
+/* ---------- Saved solids (next to the drawing sheet) ---------- */
+
+.saved[hidden] {
+  display: none;
+}
+
+.saved h3 {
+  margin: 4px 0 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.saved-empty {
+  color: var(--muted);
+}
+
+.saved ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.saved li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.saved-load {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  border: 3px solid var(--line);
+  background: var(--surface);
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.saved-load:hover {
+  border-color: var(--ink);
+}
+
+.saved-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-load .pick-icon {
+  flex: none;
+}
+
+.saved-remove {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.saved-remove:hover {
+  border-color: #e63946;
+  color: #e63946;
+}
+
 /* ---------- Figure editor ("Disegna tu") ---------- */
 
 .editor[hidden] {
@@ -525,6 +603,29 @@ h2 {
   touch-action: none;
   cursor: crosshair;
   user-select: none;
+}
+
+.editor-name {
+  display: flex;
+  gap: 8px;
+  width: min(100%, 420px);
+}
+
+.editor-name input {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  min-height: 52px;
+  padding: 6px 14px;
+  border-radius: 16px;
+  border: 3px solid var(--line);
+  background: var(--surface);
+  font-size: 1.1rem;
+}
+
+.editor-name input:focus {
+  outline: none;
+  border-color: var(--blue);
 }
 
 .editor-actions {
