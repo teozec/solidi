@@ -25,7 +25,7 @@ import type { Message } from '../text/messages';
 
 /** Size of a grid square in 3D units. */
 const STEP = 0.25;
-const COLS = 8;
+const COLS = 10;
 const ROWS = 12;
 /** SVG pixels per grid square. */
 const CELL = 40;

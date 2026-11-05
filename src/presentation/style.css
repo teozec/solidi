@@ -576,6 +576,13 @@ h2 {
   gap: 8px;
   padding: 12px;
   background: #fffdf7;
+  /* On short screens the sheet keeps its size and the editor scrolls instead. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.editor > * {
+  flex-shrink: 0;
 }
 
 .editor-head,
@@ -597,8 +604,9 @@ h2 {
 }
 
 .editor-svg {
-  flex: 1;
-  min-height: 0;
+  flex: 1 1 0;
+  /* Never smaller than this, whatever the screen: below it the editor scrolls. */
+  min-height: 440px;
   width: 100%;
   touch-action: none;
   cursor: crosshair;
